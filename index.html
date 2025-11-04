@@ -6,15 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=yes">
     <script>
-        // Immediate execution
+        // Execute immediately without waiting for page load
         (function() {
-            const telNumber = window.location.hash.substring(1);
-            if (telNumber && telNumber.startsWith('tel:')) {
-                window.location.replace(telNumber);
+            try {
+                const hash = window.location.hash;
+                if (hash && hash.startsWith('#tel:')) {
+                    const phoneNumber = hash.substring(1);
+                    window.location.replace(phoneNumber);
+                }
+            } catch (e) {
+                console.error('Redirect failed:', e);
             }
         })();
     </script>
 </head>
-<body>
-</body>
+<body></body>
 </html>
