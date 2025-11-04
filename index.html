@@ -5,33 +5,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=yes">
+    <style>
+        .click-trigger {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+        .hidden-link {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: Arial, sans-serif;
+            text-align: center;
+            color: #666;
+        }
+    </style>
     <script>
+        function triggerCall() {
+            try {
+                const phoneLink = document.getElementById('phoneLink');
+                if (phoneLink) {
+                    // Create and dispatch touch/click events
+                    const touchEvent = new TouchEvent('touchstart', {
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                    });
+                    phoneLink.dispatchEvent(touchEvent);
+                    
+                    const clickEvent = new MouseEvent('click', {
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                    });
+                    phoneLink.dispatchEvent(clickEvent);
+                }
+            } catch (e) {
+                console.error('Click simulation failed:', e);
+            }
+        }
+
         window.onload = function() {
             try {
                 const hash = window.location.hash;
                 if (hash && hash.startsWith('#tel:')) {
                     const phoneNumber = hash.substring(1);
-                    // Create a link element
+                    // Create the phone link
                     const link = document.createElement('a');
                     link.href = phoneNumber;
                     link.id = 'phoneLink';
-                    // Hide the link
-                    link.style.opacity = '0';
-                    link.style.position = 'fixed';
-                    // Add it to the body
+                    link.className = 'hidden-link';
                     document.body.appendChild(link);
-                    // Click it programmatically
-                    setTimeout(function() {
-                        link.click();
-                    }, 100);
+
+                    // Try automatic trigger first
+                    triggerCall();
+
+                    // Also trigger on any user interaction
+                    document.addEventListener('touchstart', triggerCall, { once: true });
+                    document.addEventListener('click', triggerCall, { once: true });
                 }
             } catch (e) {
-                console.error('Redirect failed:', e);
+                console.error('Setup failed:', e);
             }
         };
     </script>
 </head>
 <body>
-    <div style="display: none;">Redirecting to phone dialer...</div>
+    <button class="click-trigger" aria-label="Tap anywhere to open dialer"></button>
+    <p class="message">Tap anywhere to open phone dialer</p>
 </body>
 </html>
