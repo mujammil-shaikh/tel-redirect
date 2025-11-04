@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirecting to Phone...</title>
+    <script>
+        window.onload = function() {
+            // Get the tel: number from the URL hash
+            const telNumber = window.location.hash.substring(1);
+            if (telNumber && telNumber.startsWith('tel:')) {
+                // Redirect to the tel: protocol
+                window.location.href = telNumber;
+            }
+        }
+    </script>
+</head>
+<body>
+    <p>Redirecting to phone dialer...</p>
+</body>
+</html>
