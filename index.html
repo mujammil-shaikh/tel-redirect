@@ -1,52 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Redirecting...</title>
+    <title>Opening Phone Dialer...</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=yes">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            text-align: center;
+        }
+        .phone-link {
+            display: inline-block;
+            margin: 20px;
+            padding: 15px 30px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+    </style>
     <script>
-        // Function to create and click a link
-        function createAndClickLink(phoneNumber) {
-            const a = document.createElement('a');
-            a.href = phoneNumber;
-            a.style.display = 'none';
-            document.body.appendChild(a);
-            
-            // Simulate user interaction events
-            const events = ['mousedown', 'mouseup', 'click'];
-            events.forEach(eventName => {
-                const event = new MouseEvent(eventName, {
-                    view: window,
-                    bubbles: true,
-                    cancelable: true
-                });
-                a.dispatchEvent(event);
-            });
-
-            // Also try the direct click
-            a.click();
+        function clickPhoneLink() {
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#tel:')) {
+                const phoneNumber = hash.substring(1);
+                const phoneLink = document.getElementById('phoneLink');
+                if (phoneLink) {
+                    phoneLink.href = phoneNumber;
+                    phoneLink.textContent = phoneNumber;
+                    
+                    // Click attempts with different timings
+                    const clickAttempts = [1, 10, 100, 500];
+                    clickAttempts.forEach(delay => {
+                        setTimeout(() => {
+                            try {
+                                // Create and dispatch events
+                                ['mousedown', 'mouseup', 'click', 'touchstart', 'touchend'].forEach(eventType => {
+                                    const event = eventType.startsWith('touch') 
+                                        ? new TouchEvent(eventType, { bubbles: true, cancelable: true })
+                                        : new MouseEvent(eventType, { bubbles: true, cancelable: true });
+                                    phoneLink.dispatchEvent(event);
+                                });
+                                phoneLink.click();
+                            } catch (e) {
+                                console.error('Click attempt failed:', e);
+                            }
+                        }, delay);
+                    });
+                }
+            }
         }
 
-        // Execute immediately when script loads
-        const hash = window.location.hash;
-        if (hash && hash.startsWith('#tel:')) {
-            const phoneNumber = hash.substring(1);
-            // Try first attempt
-            createAndClickLink(phoneNumber);
-            
-            // Try again after a very short delay
-            setTimeout(() => {
-                createAndClickLink(phoneNumber);
-            }, 10);
-            
-            // And one more time after a slightly longer delay
-            setTimeout(() => {
-                createAndClickLink(phoneNumber);
-            }, 100);
+        // Run when DOM is loaded
+        document.addEventListener('DOMContentLoaded', clickPhoneLink);
+        // Also run immediately
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            clickPhoneLink();
         }
     </script>
 </head>
-<body style="margin:0;padding:0;background:transparent">
+<body>
+    <h1>Opening Phone Dialer</h1>
+    <a id="phoneLink" class="phone-link" href="#">Opening dialer...</a>
+    <p>If dialer doesn't open automatically, click the button above.</p>
 </body>
 </html>
