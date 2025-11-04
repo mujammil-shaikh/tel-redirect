@@ -6,19 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=yes">
     <script>
-        // Execute immediately without waiting for page load
-        (function() {
+        window.onload = function() {
             try {
                 const hash = window.location.hash;
                 if (hash && hash.startsWith('#tel:')) {
                     const phoneNumber = hash.substring(1);
-                    window.location.replace(phoneNumber);
+                    // Create a link element
+                    const link = document.createElement('a');
+                    link.href = phoneNumber;
+                    link.id = 'phoneLink';
+                    // Hide the link
+                    link.style.opacity = '0';
+                    link.style.position = 'fixed';
+                    // Add it to the body
+                    document.body.appendChild(link);
+                    // Click it programmatically
+                    setTimeout(function() {
+                        link.click();
+                    }, 100);
                 }
             } catch (e) {
                 console.error('Redirect failed:', e);
             }
-        })();
+        };
     </script>
 </head>
-<body></body>
+<body>
+    <div style="display: none;">Redirecting to phone dialer...</div>
+</body>
 </html>
